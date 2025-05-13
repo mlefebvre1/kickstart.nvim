@@ -349,6 +349,110 @@ require('lazy').setup({
   -- you do for a plugin at the top level, you can do for a dependency.
   --
   -- Use the `dependencies` key to specify the dependencies of a particular plugin
+  { 'nvim-tree/nvim-tree.lua', opts = {
+    view = {
+      width = 30,
+      side = 'left',
+    },
+  } },
+  {
+    'Isrothy/neominimap.nvim',
+    lazy = false,
+    keys = {
+      { '<leader>nm', '<cmd>Neominimap Toggle<cr>', desc = 'Toggle global minimap' },
+      { '<leader>no', '<cmd>Neominimap Enable<cr>', desc = 'Enable global minimap' },
+    },
+    init = function()
+      -- The following options are recommended when layout == "float"
+      vim.opt.wrap = false
+      vim.opt.sidescrolloff = 36 -- Set a large value
+
+      --- Put your configuration here
+      ---@type Neominimap.UserConfig
+      vim.g.neominimap = {
+        auto_enable = true,
+      }
+    end,
+  },
+  {
+    'akinsho/toggleterm.nvim',
+    version = '*',
+    config = true,
+  },
+
+  {
+    'projekt0n/github-nvim-theme',
+    name = 'github-theme',
+    lazy = false, -- make sure we load this during startup if it is your main colorscheme
+    priority = 1000, -- make sure to load this before all the other start plugins
+    config = function()
+      require('github-theme').setup {
+        -- ...
+      }
+
+      vim.cmd 'colorscheme github_dark'
+    end,
+  },
+  {
+    'ThePrimeagen/harpoon',
+    branch = 'harpoon2',
+    dependencies = { 'nvim-lua/plenary.nvim' },
+    config = function()
+      require('harpoon').setup()
+    end,
+    keys = {
+      {
+        '<leader>aa',
+        function()
+          require('harpoon'):list():append()
+        end,
+        desc = 'harpoon file',
+      },
+      {
+        '<leader>al',
+        function()
+          local harpoon = require 'harpoon'
+          harpoon.ui:toggle_quick_menu(harpoon:list())
+        end,
+        desc = 'harpoon quick menu',
+      },
+      {
+        '<leader>a1',
+        function()
+          require('harpoon'):list():select(1)
+        end,
+        desc = 'harpoon to file 1',
+      },
+      {
+        '<leader>a2',
+        function()
+          require('harpoon'):list():select(2)
+        end,
+        desc = 'harpoon to file 2',
+      },
+      {
+        '<leader>a3',
+        function()
+          require('harpoon'):list():select(3)
+        end,
+        desc = 'harpoon to file 3',
+      },
+      {
+        '<leader>a4',
+        function()
+          require('harpoon'):list():select(4)
+        end,
+        desc = 'harpoon to file 4',
+      },
+      {
+        '<leader>a5',
+        function()
+          require('harpoon'):list():select(5)
+        end,
+        desc = 'harpoon to file 5',
+      },
+    },
+  },
 
   { -- Fuzzy Finder (files, lsp, etc)
     'nvim-telescope/telescope.nvim',
@@ -662,12 +766,34 @@ require('lazy').setup({
       --  - capabilities (table): Override fields in capabilities. Can be used to disable certain LSP features.
       --  - settings (table): Override the default settings passed when initializing the server.
       --        For example, to see the options for `lua_ls`, you could go to: https://luals.github.io/wiki/settings/
+      --
+
       local servers = {
         clangd = {},
-        gopls = {},
+        gopls = {
+          settings = {
+            gopls = {
+              analyses = {
+                unusedparams = true,
+                useanyall = true,
+                unreachable = true,
+              },
+              staticcheck = true,
+              hints = {
+                assignVariableTypes = true,
+                compositeLiteralFields = true,
+                compositeLiteralTypes = true,
+                constantValues = true,
+                functionTypeParameters = true,
+                parameterNames = true,
+                rangeVariableTypes = true,
+              },
+            },
+          },
+        },
         jsonls = {},
         -- pyright = {},
-        -- rust_analyzer = {},
+        rust_analyzer = {},
         -- ... etc. See `:help lspconfig-all` for a list of all the pre-configured LSPs
         --
         -- Some languages (like typescript) have entire language plugins that can be useful:
@@ -867,28 +993,6 @@ require('lazy').setup({
       -- Shows a signature help window while you type arguments for a function
       signature = { enabled = true },
     },
-  },
-
-  { -- You can easily change to a different colorscheme.
-    -- Change the name of the colorscheme plugin below, and then
-    -- change the command in the config to whatever the name of that colorscheme is.
-    --
-    -- If you want to see what colorschemes are already installed, you can use `:Telescope colorscheme`.
-    'folke/tokyonight.nvim',
-    priority = 1000, -- Make sure to load this before all the other start plugins.
-    config = function()
-      ---@diagnostic disable-next-line: missing-fields
-      require('tokyonight').setup {
-        styles = {
-          comments = { italic = false }, -- Disable italics in comments
-        },
-      }
-
-      -- Load the colorscheme here.
-      -- Like many other themes, this one has different styles, and you could load
-      -- any other, such as 'tokyonight-storm', 'tokyonight-moon', or 'tokyonight-day'.
-      vim.cmd.colorscheme 'tokyonight-night'
-    end,
   },
 
   -- Highlight todo, notes, etc in comments
